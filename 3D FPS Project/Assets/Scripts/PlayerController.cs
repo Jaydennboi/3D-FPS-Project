@@ -16,10 +16,12 @@ public class PlayerController : MonoBehaviour
     public LayerMask whatIsGround;
     private Vector3 _moveInput;
     private CharacterController _characterController;
+    private Ammo _ammo;
     // Start is called before the first frame update
     void Start()
     {
         _characterController = GetComponent<CharacterController>();
+        _ammo = GetComponent<Ammo>();
     }
 
     // Update is called once per frame
@@ -70,7 +72,7 @@ public class PlayerController : MonoBehaviour
         theCamera.rotation = Quaternion.Euler(theCamera.rotation.eulerAngles + new Vector3(-mouseInput.y, 0f, 0f));
 
         //Handle Shooting
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) & _ammo.GetAmmoAmount() > 0)
         {
             RaycastHit hit;
 
@@ -87,8 +89,19 @@ public class PlayerController : MonoBehaviour
                 }
                 
                 Instantiate(bullet, firePoint.position, firePoint.rotation);
+                _ammo.RemoveAmmo();
             
         }
         
     }
+     public void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("Ammo Box"))
+        {
+            _ammo.Addammo();
+            other.gameObject.SetActive(false);
+        }
+
+    }
 }
+
